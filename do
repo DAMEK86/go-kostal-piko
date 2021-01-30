@@ -32,7 +32,7 @@ function task_build_influx {
 ## build-container: builds the container image
 function task_build_container {
     task_build_influx "linux"
-    docker build -t ${appName} .
+    docker build -t damek/${appName} .
 }
 
 function task_usage {
