@@ -1,33 +1,22 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
-	"net/http"
-	"strconv"
-	"time"
-
 	"github.com/damek86/go-kostal-piko/pkg/api"
+	"net/http"
 )
 
 func main() {
 	urlPtr := flag.String("url", "192.168.178.58", "remote address")
 	usernamePtr := flag.String("username", api.DefaultUsername, "Kostal Piko username")
 	passwordPtr := flag.String("password", api.DefaultPassword, "Kostal Piko password")
-	scanIntervalPtr := flag.String("scan_interval", "30", "delay between request")
 
 	flag.Parse()
 
-	scanIntervalValue, err := strconv.Atoi(*scanIntervalPtr)
-	if err != nil {
-		panic(err)
-	}
-	scanInterval := time.Duration(scanIntervalValue) * time.Second
 	client := api.NewClient(http.DefaultClient, *urlPtr, *usernamePtr, *passwordPtr)
-	for true {
-		work(client)
-		time.Sleep(scanInterval)
-	}
+	work(client)
 }
 
 func work(client api.Client) {
@@ -37,11 +26,18 @@ func work(client api.Client) {
 		fmt.Println(err.Error())
 	}
 
+	fmt.Printf("%+v\n", prettyPrint(statsData.Entries))
+
 	generalData := &api.DxsRespone{}
 	err = client.GetGeneralData(generalData)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Printf("%+v\n", statsData.Entries)
+	fmt.Printf("%+v\n", prettyPrint(generalData.Entries))
+}
+
+func prettyPrint(i interface{}) string {
+	s, _ := json.MarshalIndent(i, "", "\t")
+	return string(s)
 }
