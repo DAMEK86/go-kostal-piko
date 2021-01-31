@@ -13,5 +13,8 @@ func StartHealthEndpoint() {
 		rw.WriteHeader(http.StatusOK)
 	})
 	fmt.Println("start router on port 8080")
-	http.ListenAndServe(":8080", r)
+	err := http.ListenAndServe(":8080", r)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }

@@ -26,7 +26,7 @@ type client struct {
 	username          string
 	password          string
 	url               string
-	datapoints        map[string]DataPoint
+	dataPoints        map[string]DataPoint
 	generalDataPoints []int
 	statsDataPoints   []int
 }
@@ -39,7 +39,7 @@ func NewClient(httpClient *http.Client, baseURL, username, password string) Clie
 		url:               fmt.Sprintf("http://%s/api/dxs.json", baseURL),
 		username:          username,
 		password:          password,
-		datapoints:        dataMapping,
+		dataPoints:        dataMapping,
 		generalDataPoints: getGeneralDataPoints(dataMapping),
 		statsDataPoints:   getStatsDataPoints(dataMapping),
 	}
@@ -89,7 +89,7 @@ func (c *client) GetData(response *DxsRespone, dataPointsToRequest []int) error 
 }
 
 func (c *client) getDataPointFromID(id int) DataPoint {
-	for _, v := range c.datapoints {
+	for _, v := range c.dataPoints {
 		if v.ID == id {
 			return v
 		}
@@ -279,6 +279,11 @@ func getDataPoints() map[string]DataPoint {
 			FriendlyName: "stats_day_degree_of_self_sufficiency",
 			Unit:         "%",
 		},
+		"stats_operating_status": {
+			ID: 16780032,
+			FriendlyName: "stats_operating_status",
+			Unit: "",
+		},
 	}
 }
 
@@ -287,6 +292,9 @@ func getGeneralDataPoints(data map[string]DataPoint) []int {
 	dataPoints = append(dataPoints, data["pv_generator_dc_input_1_voltage"].ID)
 	dataPoints = append(dataPoints, data["pv_generator_dc_input_1_current"].ID)
 	dataPoints = append(dataPoints, data["pv_generator_dc_input_1_power"].ID)
+	dataPoints = append(dataPoints, data["pv_generator_dc_input_2_voltage"].ID)
+	dataPoints = append(dataPoints, data["pv_generator_dc_input_2_current"].ID)
+	dataPoints = append(dataPoints, data["pv_generator_dc_input_2_power"].ID)
 	dataPoints = append(dataPoints, data["house_home_consumption_covered_by_solar_generator"].ID)
 	dataPoints = append(dataPoints, data["house_home_consumption_covered_by_grid"].ID)
 	dataPoints = append(dataPoints, data["house_phase_selective_home_consumption_phase_1"].ID)
@@ -320,6 +328,7 @@ func getStatsDataPoints(data map[string]DataPoint) []int {
 	dataPoints = append(dataPoints, data["stats_day_self_consumption_kwh"].ID)
 	dataPoints = append(dataPoints, data["stats_day_self_consumption_rate"].ID)
 	dataPoints = append(dataPoints, data["stats_day_degree_of_self_sufficiency"].ID)
+	dataPoints = append(dataPoints, data["stats_operating_status"].ID)
 
 	return dataPoints
 }
